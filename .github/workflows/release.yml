@@ -1,0 +1,91 @@
+name: release
+
+# Tag a release:  git tag v0.1.0 && git push origin v0.1.0
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build (without leading v)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-14   # Apple Silicon (arm64)
+            arch: arm64
+          - os: macos-13   # Intel (x64)
+            arch: x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun test
+      - name: Build ${{ matrix.arch }} binary
+        run: ./scripts/build-release.sh "${VERSION#v}"
+        env:
+          VERSION: ${{ github.event.inputs.version || github.ref_name }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: otodo-darwin-${{ matrix.arch }}
+          path: |
+            dist/otodo-darwin-${{ matrix.arch }}.tar.gz
+            dist/otodo-darwin-${{ matrix.arch }}.sha256
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Resolve version
+        id: v
+        env:
+          RAW_VERSION: ${{ github.event.inputs.version || github.ref_name }}
+        run: |
+          V="${RAW_VERSION#v}"
+          if ! [[ "$V" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.]+)?$ ]]; then
+            echo "refusing unexpected version: $V" >&2; exit 1
+          fi
+          echo "version=$V" >>"$GITHUB_OUTPUT"
+      - name: Generate formula
+        run: |
+          ./scripts/gen-formula.sh \
+            "${{ steps.v.outputs.version }}" \
+            "${{ github.repository_owner }}" \
+            "$(cat dist/otodo-darwin-arm64.sha256)" \
+            "$(cat dist/otodo-darwin-x64.sha256)"
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ steps.v.outputs.version }}" \
+            dist/otodo-darwin-arm64.tar.gz dist/otodo-darwin-x64.tar.gz dist/otodo.rb \
+            -t "v${{ steps.v.outputs.version }}" \
+            -n "otodo v${{ steps.v.outputs.version }}"
+      # Optional: auto-update the tap. Add a repo secret TAP_GITHUB_TOKEN
+      # (a PAT with `contents:write` on <owner>/homebrew-otodo) to enable.
+      - name: Update Homebrew tap
+        if: ${{ env.TAP_GITHUB_TOKEN != '' }}
+        env:
+          TAP_GITHUB_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
+        run: |
+          git clone "https://x-access-token:${TAP_GITHUB_TOKEN}@github.com/${{ github.repository_owner }}/homebrew-otodo.git" tap
+          mkdir -p tap/Formula
+          cp dist/otodo.rb tap/Formula/otodo.rb
+          cd tap
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/otodo.rb
+          git commit -m "otodo v${{ steps.v.outputs.version }}" || echo "no changes"
+          git push

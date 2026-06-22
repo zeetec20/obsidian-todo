@@ -1,0 +1,22 @@
+{
+  "name": "obsidian-todo",
+  "version": "0.1.0",
+  "description": "Scan an Obsidian vault for TODO.md files and browse tasks in a TUI",
+  "type": "module",
+  "bin": {
+    "otodo": "./src/index.ts"
+  },
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@opentui/core": "latest",
+    "@opentui/react": "latest",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "@types/react": "^19.0.0"
+  }
+}

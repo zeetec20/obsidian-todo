@@ -41,8 +41,9 @@ layout — confirm visual/layout/mouse behavior in a real terminal.
 See `RELEASE.md`. Key constraint: **OpenTUI uses native per-platform FFI packages
 (`@opentui/core-<platform>`) gated by `cpu`/`os`, so cross-compiling another arch from
 this machine fails.** Each arch builds on its own native runner via
-`.github/workflows/release.yml` (tag `v*`). Local builds (`scripts/build-release.sh`)
-cover the host arch only.
+`.github/workflows/release.yml`. Releases are auto-tagged by **release-please** from
+Conventional Commits (`feat:`/`fix:` on `main` → release PR → merge → tag + build);
+do not tag manually. Local builds (`scripts/build-release.sh`) cover the host arch only.
 
 ## Architecture
 

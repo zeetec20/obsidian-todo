@@ -18,24 +18,30 @@ deps) on GitHub Releases, installed through a custom Homebrew tap.
    `contents:write` on `zeetec20/homebrew-otodo`. Without it, the formula is still
    attached to each release as `otodo.rb` for you to copy manually.
 
-## Cut a release (automated)
+## Cut a release (automated — no manual tagging)
+
+Versioning + tagging is driven by [release-please](https://github.com/googleapis/release-please)
+from [Conventional Commits](https://www.conventionalcommits.org/):
+
+1. Commit to `main` with conventional messages — `fix:` → patch, `feat:` → minor,
+   `feat!:`/`BREAKING CHANGE:` → major. (Other prefixes like `chore:`/`docs:` don't
+   trigger a release.)
+2. release-please opens/updates a **"chore(main): release X.Y.Z" PR** that bumps
+   `package.json` + the version manifest and updates `CHANGELOG.md`.
+3. **Merge that PR.** release-please then creates the `vX.Y.Z` tag + GitHub release;
+   the same workflow builds both arches, uploads the tarballs + `otodo.rb`, and
+   (if `TAP_GITHUB_TOKEN` is set) commits the formula to the tap.
+
+State files: `release-please-config.json` + `.release-please-manifest.json` (the
+manifest is the source of truth for the current version — keep it in sync with
+`package.json`).
+
+If `TAP_GITHUB_TOKEN` is not set, finish the tap manually after the release:
 
 ```bash
-# bump "version" in package.json, commit, then:
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-The workflow then: builds + tests both arches natively, publishes a GitHub release
-with `otodo-darwin-arm64.tar.gz`, `otodo-darwin-x64.tar.gz`, and `otodo.rb`, and
-(if `TAP_GITHUB_TOKEN` is set) commits the formula to the tap.
-
-If `TAP_GITHUB_TOKEN` is not set, finish manually:
-
-```bash
-gh release download v0.1.0 -p otodo.rb -D /tmp
+gh release download vX.Y.Z -p otodo.rb -D /tmp
 cp /tmp/otodo.rb /path/to/homebrew-otodo/Formula/otodo.rb
-cd /path/to/homebrew-otodo && git commit -am "otodo 0.1.0" && git push
+cd /path/to/homebrew-otodo && git commit -am "otodo X.Y.Z" && git push
 ```
 
 ## Build locally (your arch only)

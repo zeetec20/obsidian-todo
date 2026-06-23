@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/zeetec20/obsidian-todo/compare/v0.2.1...v0.2.2) (2026-06-23)
+
+
+### Bug Fixes
+
+* secrets token usage ([ce57c15](https://github.com/zeetec20/obsidian-todo/commit/ce57c152c796ef2e03ac0abebb43996cc9f97164))
+
 ## [0.2.1](https://github.com/zeetec20/obsidian-todo/compare/v0.2.0...v0.2.1) (2026-06-23)
 
 

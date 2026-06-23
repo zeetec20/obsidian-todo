@@ -23,7 +23,7 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: rp
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TAP_GITHUB_TOKEN }}
 
   build:
     needs: release-please
@@ -82,7 +82,7 @@ jobs:
       - name: Update Homebrew tap
         if: ${{ env.GITHUB_TOKEN != '' }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
           VERSION: ${{ needs.release-please.outputs.version }}
         run: |
           git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository_owner }}/homebrew-otodo.git" tap

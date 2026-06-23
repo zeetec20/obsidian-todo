@@ -6,19 +6,15 @@ class Otodo < Formula
   homepage "https://github.com/__GH_OWNER__/obsidian-todo"
   version "__VERSION__"
 
-  on_macos do
-    on_arm do
-      url "https://github.com/__GH_OWNER__/obsidian-todo/releases/download/v#{version}/otodo-darwin-arm64.tar.gz"
-      sha256 "__SHA_ARM64__"
-    end
-    on_intel do
-      url "https://github.com/__GH_OWNER__/obsidian-todo/releases/download/v#{version}/otodo-darwin-x64.tar.gz"
-      sha256 "__SHA_X64__"
-    end
-  end
+  # Apple Silicon only. Intel hosted runners are retired, so no x64 binary is built.
+  depends_on arch: :arm64
+  depends_on :macos
+
+  url "https://github.com/__GH_OWNER__/obsidian-todo/releases/download/v#{version}/otodo-darwin-arm64.tar.gz"
+  sha256 "__SHA_ARM64__"
 
   def install
-    bin.install (Hardware::CPU.arm? ? "otodo-darwin-arm64" : "otodo-darwin-x64") => "otodo"
+    bin.install "otodo-darwin-arm64" => "otodo"
   end
 
   test do

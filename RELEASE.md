@@ -1,13 +1,14 @@
 # Releasing otodo via Homebrew
 
-Distribution: prebuilt, self-contained binaries (Bun runtime bundled — no install-time
-deps) on GitHub Releases, installed through a custom Homebrew tap.
+Distribution: a prebuilt, self-contained **Apple Silicon (arm64)** binary (Bun runtime
+bundled — no install-time deps) on GitHub Releases, installed through a custom Homebrew tap.
 
-> **Why CI, not local cross-compile?** OpenTUI ships native (FFI) bindings per
-> platform. `bun build --compile` can only target the arch whose
-> `@opentui/core-<platform>` package is unpacked — and those are gated by `cpu`/`os`,
-> so an arm64 Mac cannot produce an x64 binary. Each arch is therefore built on its
-> own native runner (`.github/workflows/release.yml`: macos-14 arm64 + macos-13 x64).
+> **Apple Silicon only.** OpenTUI ships native (FFI) bindings per platform, gated by
+> `cpu`/`os`, so each arch must be built on a matching native runner. GitHub has
+> **retired hosted Intel macOS runners**, so the x64 build can't run — `macos-13` jobs
+> queue forever. The workflow builds arm64 on `macos-14` only. To re-add Intel later,
+> build x64 under Rosetta on an arm64 runner (force an x64 `bun` + `bun install`), then
+> restore the `on_intel` block in `Formula/otodo.rb`.
 
 ## One-time setup
 
@@ -47,8 +48,8 @@ cd /path/to/homebrew-otodo && git commit -am "otodo X.Y.Z" && git push
 ## Build locally (your arch only)
 
 ```bash
-./scripts/build-release.sh                 # -> dist/otodo-darwin-<arch>.tar.gz + .sha256
-./scripts/gen-formula.sh 0.1.0 zeetec20 <arm64_sha> <x64_sha>   # -> dist/otodo.rb
+./scripts/build-release.sh                 # -> dist/otodo-darwin-arm64.tar.gz + .sha256
+./scripts/gen-formula.sh 0.1.0 zeetec20 "$(cat dist/otodo-darwin-arm64.sha256)"   # -> dist/otodo.rb
 ```
 
 Local builds cover one arch — use the workflow for a real multi-arch release.
@@ -62,8 +63,8 @@ brew install zeetec20/otodo/otodo
 
 ## Notes
 
-- Add Linux: append `bun-linux-x64` / `bun-linux-arm64` runners to the matrix and an
-  `on_linux` block to `Formula/otodo.rb`.
-- Each binary is ~62 MB compressed runtime; `--minify` is applied.
+- Add Linux/Intel: add a matching native runner to the matrix and the corresponding
+  `on_linux`/`on_intel` block to `Formula/otodo.rb` (drop the `depends_on arch: :arm64`).
+- The binary is ~62 MB compressed runtime; `--minify` is applied.
 - `Formula/otodo.rb` is a **template** (`__PLACEHOLDER__` tokens). The runnable
   formula is generated to `dist/otodo.rb`.

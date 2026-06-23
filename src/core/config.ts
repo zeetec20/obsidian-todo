@@ -43,14 +43,15 @@ export async function loadConfig(): Promise<Config> {
 
 /** Migrate a legacy single-`vaultPath` config into the vaults/lastVault model. */
 function migrate(config: Config): Config {
-  if (config.vaultPath && (!config.vaults || config.vaults.length === 0)) {
+  const { vaultPath, ...rest } = config;
+  if (vaultPath && (!rest.vaults || rest.vaults.length === 0)) {
     return {
-      ...config,
-      vaults: [config.vaultPath],
-      lastVault: config.lastVault ?? config.vaultPath,
+      ...rest,
+      vaults: [vaultPath],
+      lastVault: rest.lastVault ?? vaultPath,
     };
   }
-  return config;
+  return rest;
 }
 
 /** Add a vault path to the config (de-duped) and mark it as the last opened. */

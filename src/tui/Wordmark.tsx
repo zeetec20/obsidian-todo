@@ -22,7 +22,10 @@ export function Wordmark() {
   const [pos, setPos] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => setPos((p) => (p + 1) % (WIDTH + WINDOW)), SPEED);
+    const id = setInterval(
+      () => setPos((p) => (p + 1) % (WIDTH + WINDOW)),
+      SPEED,
+    );
     return () => clearInterval(id);
   }, []);
 
@@ -47,7 +50,7 @@ export function Wordmark() {
           </text>
         </box>
       ))}
-      <text fg={theme.muted}>{"\nobsidian tasks"}</text>
+      <text fg={theme.muted}>{"\nobsidian todo"}</text>
     </box>
   );
 }

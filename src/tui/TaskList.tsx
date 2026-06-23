@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TextAttributes, type ScrollBoxRenderable } from "@opentui/core";
 import type { Task } from "../core/types.ts";
 import { useTheme } from "./theme.tsx";
@@ -33,10 +33,17 @@ export function TaskList({
   const theme = useTheme();
   const scrollRef = useRef<ScrollBoxRenderable>(null);
   const isTerminal = theme.name === "terminal";
+  const [blinkOn, setBlinkOn] = useState(true);
 
   useEffect(() => {
     scrollRef.current?.scrollChildIntoView(`row-${selectedIndex}`);
   }, [selectedIndex, rows.length]);
+
+  useEffect(() => {
+    if (!focused) { setBlinkOn(true); return; }
+    const id = setInterval(() => setBlinkOn((b) => !b), 530);
+    return () => clearInterval(id);
+  }, [focused]);
 
   return (
     <scrollbox
@@ -55,7 +62,7 @@ export function TaskList({
             const caret = row.collapsed ? "▸" : "▾";
             return (
               <box
-                key={`row-${i}`}
+                key={`row-${i}-cat`}
                 id={`row-${i}`}
                 onMouseDown={() => onPick(i)}
                 style={{
@@ -95,7 +102,7 @@ export function TaskList({
 
           return (
             <box
-              key={`row-${i}`}
+              key={`row-${i}-task`}
               id={`row-${i}`}
               onMouseDown={() => onPick(i)}
               style={{
@@ -111,7 +118,7 @@ export function TaskList({
                 fg={themedSel ? theme.selectedFg : theme.fg}
               >
                 <span fg={selected ? (focused ? theme.accent : theme.muted) : theme.muted}>
-                  {(selected ? "▌ " : "  ") + `${row.n}. `}
+                  {(selected ? (focused && !blinkOn ? "  " : "▌ ") : "  ") + `${row.n}. `}
                 </span>
                 <span fg={theme.muted}>{t.id + "  "}</span>
                 <span fg={themedSel ? theme.selectedFg : theme.status[t.status]}>

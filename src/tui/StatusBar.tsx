@@ -30,7 +30,7 @@ export function StatusBar({
   ];
 
   return (
-    <box style={{ flexDirection: "row", paddingLeft: 1, paddingRight: 1 }}>
+    <box style={{ flexDirection: "row", paddingLeft: 1, paddingRight: 1, flexShrink: 0 }}>
       {tabs.map((t, i) => {
         const active = i === tab;
         // Progress bar for each status (not All): count vs total.

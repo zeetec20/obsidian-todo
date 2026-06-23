@@ -108,7 +108,10 @@ function App({
   const [confirmBtn, setConfirmBtn] = useState(0); // 0=Delete, 1=Cancel
   const [pendingDelete, setPendingDelete] = useState<ListRow | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
-  const [themeBefore, setThemeBefore] = useState<{ theme?: string; mode?: "auto" | "light" | "dark" }>({});
+  const [themeBefore, setThemeBefore] = useState<{
+    theme?: string;
+    mode?: "auto" | "light" | "dark";
+  }>({});
   const [toast, setToast] = useState<ToastData | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -118,7 +121,10 @@ function App({
   const listInner = Math.max(20, Math.floor(width * 0.45) - 2);
   const maxTitle = Math.max(10, listInner - 14);
   const maxMeta = Math.max(16, listInner);
-  const lastClick = useRef<{ index: number; time: number }>({ index: -1, time: 0 });
+  const lastClick = useRef<{ index: number; time: number }>({
+    index: -1,
+    time: 0,
+  });
 
   function pushToast(msg: string, kind: ToastKind = "info") {
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -185,7 +191,8 @@ function App({
     return out;
   }, [filtered, categories, categoryCounts, collapsed, showEmptyCats]);
 
-  const safeIndex = selectedIndex < 0 ? -1 : Math.min(selectedIndex, rows.length - 1);
+  const safeIndex =
+    selectedIndex < 0 ? -1 : Math.min(selectedIndex, rows.length - 1);
   const selectedRow = safeIndex < 0 ? undefined : rows[safeIndex];
   const selectedTask =
     selectedRow?.type === "task" ? selectedRow.task : undefined;
@@ -262,7 +269,11 @@ function App({
     pushToast(`Theme: ${name} (${m})`, "success");
   }
   function cancelTheme() {
-    setConfig((c) => ({ ...c, theme: themeBefore.theme, mode: themeBefore.mode }));
+    setConfig((c) => ({
+      ...c,
+      theme: themeBefore.theme,
+      mode: themeBefore.mode,
+    }));
     setMode("list");
   }
 
@@ -446,8 +457,8 @@ function App({
     } else if (ch === "n") {
       setEditTask(undefined);
       setMode("form");
-    } else if (ch === "e" && !key.shift) editDescription();
-    else if ((ch === "e" && key.shift) || ch === "E") editSelected();
+    } else if (ch === "e" && !key.shift) editSelected();
+    else if ((ch === "e" && key.shift) || ch === "E") editDescription();
     else if (ch === "s") {
       if (selectedTask) setMode("status");
     } else if (ch === "d") askDelete();
@@ -511,7 +522,12 @@ function App({
   let chipsLen = 0;
   if (filter.category) chipsLen += 3 + filter.category.length + 3;
   if (filter.createdFrom || filter.createdTo)
-    chipsLen += 3 + (filter.createdFrom ?? "*").length + 1 + (filter.createdTo ?? "*").length + 3;
+    chipsLen +=
+      3 +
+      (filter.createdFrom ?? "*").length +
+      1 +
+      (filter.createdTo ?? "*").length +
+      3;
   if (search) chipsLen += 3 + search.length + 3;
   if (chipsLen > 0) chipsLen += 9; // "x clear"
   const compactHints = chipsLen + hintsLen + 6 > width;
@@ -537,6 +553,7 @@ function App({
           paddingTop: 1,
           paddingLeft: 1,
           paddingRight: 1,
+          flexShrink: 0,
         }}
       >
         <text
@@ -626,20 +643,23 @@ function App({
           paddingLeft: 1,
           paddingRight: 1,
           marginBottom: 1,
+          flexShrink: 0,
         }}
       >
         <box style={{ flexDirection: "row", flexShrink: 1 }}>
           <FilterBar filter={filter} search={search || undefined} />
         </box>
         <text fg={theme.muted} style={{ flexShrink: 0 }}>
-          {(compactHints ? HINTS.filter((h) => h.key === "q") : HINTS).map((h, i) => (
-            <span key={h.key}>
-              {i > 0 ? <span fg={theme.muted}>{"  ·  "}</span> : null}
-              <span fg={theme.muted}>{h.icon + " "}</span>
-              <span fg={theme.accent}>{h.key}</span>
-              <span fg={theme.muted}>{" " + h.label}</span>
-            </span>
-          ))}
+          {(compactHints ? HINTS.filter((h) => h.key === "q") : HINTS).map(
+            (h, i) => (
+              <span key={h.key}>
+                {i > 0 ? <span fg={theme.muted}>{"  ·  "}</span> : null}
+                <span fg={theme.muted}>{h.icon + " "}</span>
+                <span fg={theme.accent}>{h.key}</span>
+                <span fg={theme.muted}>{" " + h.label}</span>
+              </span>
+            ),
+          )}
         </text>
       </box>
 
@@ -651,6 +671,11 @@ function App({
                 ? `Delete ${pendingDelete.task.id} "${pendingDelete.task.name}" ?`
                 : `Delete category "${pendingDelete.category}" ?`}
             </text>
+            {pendingDelete.type === "task" ? (
+              <text fg={theme.status.doing}>
+                This task will be deleted permanently.
+              </text>
+            ) : null}
           </box>
           <box
             style={{
@@ -660,7 +685,12 @@ function App({
               justifyContent: "center",
             }}
           >
-            <Button label="Delete" focused={confirmBtn === 0} danger onClick={doDelete} />
+            <Button
+              label="Delete"
+              focused={confirmBtn === 0}
+              danger
+              onClick={doDelete}
+            />
             <Button
               label="Cancel"
               focused={confirmBtn === 1}
@@ -684,13 +714,16 @@ function App({
             task={editTask}
             categories={categories}
             defaultCategory={
-              selectedRow?.type === "category" ? selectedRow.category : selectedTask?.category
+              selectedRow?.type === "category"
+                ? selectedRow.category
+                : selectedTask?.category
             }
             onSubmit={handleFormSubmit}
             onCancel={() => {
               setEditTask(undefined);
               setMode("list");
             }}
+            onError={(msg) => pushToast(msg, "error")}
           />
         </Overlay>
       ) : null}
@@ -770,6 +803,7 @@ function App({
               setMode("list");
             }}
             onCancel={() => setMode("list")}
+            onError={(msg) => pushToast(msg, "error")}
           />
         </Overlay>
       ) : null}

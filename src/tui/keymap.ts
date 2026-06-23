@@ -25,9 +25,9 @@ export const KEYMAP_GROUPS: KeyGroup[] = [
     items: [
       { keys: "enter", desc: "Edit task / toggle category" },
       { keys: "space", desc: "Collapse / expand category" },
-      { keys: "E", desc: "Edit task fields" },
+      { keys: "e", desc: "Edit task fields" },
       { keys: "n", desc: "New task" },
-      { keys: "e", desc: "Edit description in $EDITOR" },
+      { keys: "E", desc: "Edit description in $EDITOR" },
       { keys: "s", desc: "Change status (quick)" },
       { keys: "d", desc: "Delete task — or category (on a category row)" },
       { keys: "y", desc: "Copy task to clipboard" },

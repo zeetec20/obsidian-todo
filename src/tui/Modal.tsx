@@ -54,10 +54,13 @@ export function Button({
     <box
       onMouseDown={onClick}
       style={{
+        flexDirection: "row",
+        height: 3,
         paddingLeft: 2,
         paddingRight: 2,
         borderStyle: "rounded",
         borderColor: focused ? accent : theme.border,
+        flexShrink: 0,
       }}
     >
       <text attributes={focused ? TextAttributes.BOLD : undefined} fg={focused ? accent : theme.muted}>

@@ -24,8 +24,24 @@ id: #WRK-2
 status: backlog
 `;
 
+const SAMPLE_TABLE = `## 1. Fix login bug
+| id | due | status | tags | created | updated | priority |
+|---|---|---|---|---|---|---|
+| #WRK-1 | 2026-07-01 | doing | [auth, urgent] | - | - | high |
+
+Description in **markdown**.
+![shot](./img.png)
+
+---
+
+## 2. Deploy v2
+| id | due | status | tags | created | updated |
+|---|---|---|---|---|---|
+| #WRK-2 | - | backlog | - | - | - |
+`;
+
 describe("parser", () => {
-  test("parses tasks with metadata + body", () => {
+  test("parses legacy key:value tasks", () => {
     const tasks = parseTodoFile(SAMPLE, "Work", "/v/Work/TODO.md");
     expect(tasks).toHaveLength(2);
     const [a, b] = tasks;
@@ -41,6 +57,34 @@ describe("parser", () => {
     expect(b!.description).toBe("");
   });
 
+  test("parses table-format tasks", () => {
+    const tasks = parseTodoFile(SAMPLE_TABLE, "Work", "/v/Work/TODO.md");
+    expect(tasks).toHaveLength(2);
+    const [a, b] = tasks;
+    expect(a!.name).toBe("Fix login bug");
+    expect(a!.id).toBe("#WRK-1");
+    expect(a!.due).toBe("2026-07-01");
+    expect(a!.status).toBe("doing");
+    expect(a!.tags).toEqual(["auth", "urgent"]);
+    expect(a!.extra).toEqual({ priority: "high" });
+    expect(a!.description).toContain("**markdown**");
+    expect(b!.status).toBe("backlog");
+    expect(b!.description).toBe("");
+  });
+
+  test("serializes to horizontal table format with dividers and counters", () => {
+    const tasks = parseTodoFile(SAMPLE, "Work", "/v/Work/TODO.md");
+    const text = serializeTasks(tasks);
+    expect(text).toContain("## 1. Fix login bug");
+    expect(text).toContain("## 2. Deploy v2");
+    expect(text).toContain("---");
+    expect(text).toContain("| id | due | status | tags |");
+    expect(text).toContain("| #WRK-1 |");
+    expect(text).toContain("| doing |");
+    expect(text).toContain("| [auth, urgent] |");
+    expect(text).toContain("| priority |");
+  });
+
   test("round-trips (idempotent, preserves unknown keys)", () => {
     const tasks = parseTodoFile(SAMPLE, "Work", "/v/Work/TODO.md");
     const text = serializeTasks(tasks);
@@ -54,7 +98,7 @@ describe("parser", () => {
     const tasks = parseTodoFile(src, "Work", "/v/Work/TODO.md");
     expect(tasks[0]!.createdAt).toBe("2026-06-01T10:00:00.000Z");
     const text = serializeTasks(tasks);
-    expect(text).toContain("created: 2026-06-01T10:00:00.000Z");
+    expect(text).toContain("| 2026-06-01T10:00:00.000Z |");
     expect(serializeTasks(parseTodoFile(text, "Work", "/v/Work/TODO.md"))).toBe(text);
   });
 

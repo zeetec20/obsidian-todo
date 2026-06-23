@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useKeyboard } from "@opentui/react";
 import { useTheme } from "./theme.tsx";
 import { DateInput } from "./DateInput.tsx";
@@ -14,22 +14,24 @@ export function DateRangeModal({
   onApply,
   onClear,
   onCancel,
+  onError,
 }: {
   from?: string;
   to?: string;
   onApply: (from?: string, to?: string) => void;
   onClear: () => void;
   onCancel: () => void;
+  onError: (msg: string) => void;
 }) {
   const theme = useTheme();
   const [f, setF] = useState(from ?? "");
   const [t, setT] = useState(to ?? "");
   const [focus, setFocus] = useState(0);
-  const [error, setError] = useState("");
   const fields = ["from", "to", "apply", "clear"];
   const cur = fields[Math.min(focus, fields.length - 1)];
   const on = (k: string) => cur === k;
-  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
   function validate(): string {
     if (f && f > today) return "From must be today or earlier";
@@ -37,9 +39,14 @@ export function DateRangeModal({
     return "";
   }
 
+  useEffect(() => {
+    const err = validate();
+    if (err) onError(err);
+  }, [f, t]);
+
   function apply() {
     const err = validate();
-    if (err) return setError(err);
+    if (err) return onError(err);
     onApply(f || undefined, t || undefined);
   }
 
@@ -91,11 +98,6 @@ export function DateRangeModal({
       {field("from", f, setF)}
       {label("to", "To")}
       {field("to", t, setT)}
-      {error ? (
-        <box style={{ alignItems: "center" }}>
-          <text fg={theme.status.doing}>{error}</text>
-        </box>
-      ) : null}
       <box style={{ flexDirection: "row", gap: 2, marginTop: 1, justifyContent: "center" }}>
         <Button label="Apply" focused={on("apply")} onClick={apply} />
         <Button label="Clear" focused={on("clear")} onClick={onClear} />

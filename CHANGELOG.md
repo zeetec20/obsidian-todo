@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/zeetec20/obsidian-todo/compare/v0.2.2...v0.3.0) (2026-06-23)
+
+
+### Features
+
+* optimize the ui from glitch ([84524ab](https://github.com/zeetec20/obsidian-todo/commit/84524abcfc9bce1ece34cff6054f9250c98745ab))
+
 ## [0.2.2](https://github.com/zeetec20/obsidian-todo/compare/v0.2.1...v0.2.2) (2026-06-23)
 
 

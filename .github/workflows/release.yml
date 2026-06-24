@@ -58,6 +58,7 @@ jobs:
         if: ${{ matrix.cross == true }}
         run: |
           curl -fsSL https://bun.sh/install | BUN_INSTALL="$HOME/.bun-x64" arch -x86_64 bash
+          rm -rf node_modules
           "$HOME/.bun-x64/bin/bun" install
           echo "$HOME/.bun-x64/bin" >> $GITHUB_PATH
       - name: Build binary

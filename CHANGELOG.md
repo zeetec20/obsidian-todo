@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/zeetec20/obsidian-todo/compare/v0.4.0...v0.4.1) (2026-06-24)
+
+
+### Bug Fixes
+
+* build failed ([a58584a](https://github.com/zeetec20/obsidian-todo/commit/a58584ace452b7fc0773d5906cf05360a361f392))
+
 ## [0.4.0](https://github.com/zeetec20/obsidian-todo/compare/v0.3.0...v0.4.0) (2026-06-24)
 
 

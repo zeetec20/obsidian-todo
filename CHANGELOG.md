@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.5](https://github.com/zeetec20/obsidian-todo/compare/v0.4.4...v0.4.5) (2026-06-24)
+
+
+### Bug Fixes
+
+* darwin-x64 now builds natively on macos-13 ([13613f6](https://github.com/zeetec20/obsidian-todo/commit/13613f62fd20f981b4a956d92d166406622d57bb))
+
 ## [0.4.4](https://github.com/zeetec20/obsidian-todo/compare/v0.4.3...v0.4.4) (2026-06-24)
 
 

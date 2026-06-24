@@ -45,7 +45,9 @@ export function dayName(due: string | undefined): string {
 export function createdCol(iso: string | undefined): string {
   if (!iso) return "-";
   const date = iso.slice(0, 10);
-  return `${date} - ${relativeTime(iso)} ago`;
+  const relativeTimeText = relativeTime(iso);
+
+  return `${date} - ${relativeTimeText} ${relativeTimeText === "just now" ? "" : "ago"}`;
 }
 
 /** Count tasks per status. */

@@ -121,7 +121,9 @@ export function parseTodoFile(
       bodyLines.push(lines[i]!);
       i++;
     }
-    const description = bodyLines.join("\n").replace(/\n+---\s*$/, "").replace(/\s+$/, "");
+    // Strip the trailing `---` task separator. `\n*` (not `\n+`) so an empty-description
+    // task — whose whole body is just the divider — is stripped too, not left as "---".
+    const description = bodyLines.join("\n").replace(/\n*---\s*$/, "").replace(/\s+$/, "");
 
     tasks.push({
       id: meta.id,

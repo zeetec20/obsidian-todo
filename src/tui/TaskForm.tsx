@@ -10,6 +10,36 @@ import { Button } from "./Modal.tsx";
 
 const SENTINEL = " new";
 
+// Module-scope so its identity is stable. If this lived inside TaskForm it would be a new
+// component type on every render, remounting each field's subtree and wiping the input
+// buffer / resetting DateInput's segment state on every keystroke.
+function Field({
+  focused,
+  onMouseDown,
+  children,
+}: {
+  focused: boolean;
+  onMouseDown?: () => void;
+  children: ReactNode;
+}) {
+  const theme = useTheme();
+  return (
+    <box
+      onMouseDown={onMouseDown}
+      style={{
+        borderStyle: "rounded",
+        borderColor: focused ? theme.accent : theme.border,
+        paddingLeft: 1,
+        paddingRight: 1,
+        backgroundColor: theme.bg,
+        flexShrink: 0,
+      }}
+    >
+      {children}
+    </box>
+  );
+}
+
 export function TaskForm({
   task,
   categories,
@@ -27,7 +57,6 @@ export function TaskForm({
 }) {
   const theme = useTheme();
   const { height: termH } = useTerminalDimensions();
-  const formHeight = Math.max(14, termH - 4);
   const startNew = !!task && !categories.includes(task.category);
   const initialCategory =
     task && categories.includes(task.category)
@@ -35,13 +64,19 @@ export function TaskForm({
       : defaultCategory && categories.includes(defaultCategory)
         ? defaultCategory
         : categories[0] ?? "";
-  const [name, setName] = useState(task?.name ?? "");
+  // Inputs are uncontrolled after mount: `value` stays a constant initial so OpenTUI's
+  // `set value` (which forces the cursor to the end) never re-fires mid-edit. `onInput`
+  // keeps state synced for submit/validation. Same pattern as the <textarea> below.
+  const initialName = task?.name ?? "";
+  const initialNewCat = startNew ? task!.category : "";
+  const initialTags = (task?.tags ?? []).join(", ");
+  const [name, setName] = useState(initialName);
   const [category, setCategory] = useState(initialCategory);
   const [newMode, setNewMode] = useState(startNew || categories.length === 0);
-  const [newCat, setNewCat] = useState(startNew ? task!.category : "");
+  const [newCat, setNewCat] = useState(initialNewCat);
   const [due, setDue] = useState(task?.due ?? "");
   const [status, setStatus] = useState<Status>(task?.status ?? "backlog");
-  const [tags, setTags] = useState((task?.tags ?? []).join(", "));
+  const [tags, setTags] = useState(initialTags);
   const initialDesc = task?.description ?? "";
   const [focusIdx, setFocusIdx] = useState(0);
   const descRef = useRef<TextareaRenderable>(null);
@@ -62,6 +97,18 @@ export function TaskForm({
   const fi = Math.min(focusIdx, fields.length - 1);
   const cur = fields[fi];
   const on = (key: string) => cur === key;
+
+  // OpenTUI's scrollbox needs an explicit bounded height — its internal content node is
+  // `minHeight: 100%` + `flexGrow: 1`, so given no height it fills the centered overlay
+  // (the empty gap) or mis-measures on the first frame (the "mini" open). Pin it to the
+  // collapsed content height, capped by the viewport so it scrolls on short terminals.
+  //   per field: label(1) + bordered field/dropdown — name/cat/due/status/tags 4 each,
+  //   description 8 (textarea h5 + border), tip 2.
+  const contentRows = newMode ? 34 : 30;
+  // Budget = viewport − chrome(6: pad4+border2) − buttons(5) − footer(1). termH reads 0 on
+  // the first render → fall back to contentRows so the form opens full-size, never mini.
+  const budget = termH > 14 ? termH - 12 : contentRows;
+  const scrollH = Math.min(contentRows, budget);
 
   // Poll plainText while description is focused; cache on blur.
   // Needed because scrollbox virtual rendering can drop the ref's live value.
@@ -114,36 +161,11 @@ export function TaskForm({
       <text fg={on(key) ? theme.accent : theme.muted}>{text}</text>
     </box>
   );
-  const Field = ({
-    focused,
-    onMouseDown,
-    children,
-  }: {
-    focused: boolean;
-    onMouseDown?: () => void;
-    children: ReactNode;
-  }) => (
-    <box
-      onMouseDown={onMouseDown}
-      style={{
-        borderStyle: "rounded",
-        borderColor: focused ? theme.accent : theme.border,
-        paddingLeft: 1,
-        paddingRight: 1,
-        backgroundColor: theme.bg,
-        flexShrink: 0,
-      }}
-    >
-      {children}
-    </box>
-  );
-
   return (
     <box
       style={{
         flexDirection: "column",
         width: 60,
-        height: formHeight,
         flexShrink: 0,
         padding: 2,
         gap: 0,
@@ -153,10 +175,10 @@ export function TaskForm({
       }}
       title={task ? ` Edit ${task.id} ` : " New task "}
     >
-      <scrollbox scrollX={false} style={{ flexGrow: 1 }}>
+      <scrollbox scrollX={false} style={{ height: scrollH }}>
         {label("name", "Name *")}
         <Field focused={on("name")} onMouseDown={focusKey("name")}>
-          <input focused={on("name")} value={name} onInput={setName} placeholder="Task name" style={{ flexGrow: 1 }} />
+          <input focused={on("name")} value={initialName} onInput={setName} placeholder="Task name" style={{ flexGrow: 1 }} />
         </Field>
 
         {label("category", "Category *")}
@@ -183,7 +205,7 @@ export function TaskForm({
             <Field focused={on("newcat")} onMouseDown={focusKey("newcat")}>
               <input
                 focused={on("newcat")}
-                value={newCat}
+                value={initialNewCat}
                 onInput={setNewCat}
                 placeholder="e.g. Side Project"
                 style={{ flexGrow: 1 }}
@@ -209,7 +231,7 @@ export function TaskForm({
 
         {label("tags", "Tags (comma separated, optional)")}
         <Field focused={on("tags")} onMouseDown={focusKey("tags")}>
-          <input focused={on("tags")} value={tags} onInput={setTags} placeholder="auth, urgent" style={{ flexGrow: 1 }} />
+          <input focused={on("tags")} value={initialTags} onInput={setTags} placeholder="auth, urgent" style={{ flexGrow: 1 }} />
         </Field>
 
         {label("description", "Description (optional)")}

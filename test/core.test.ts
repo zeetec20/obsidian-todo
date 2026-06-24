@@ -72,6 +72,26 @@ describe("parser", () => {
     expect(b!.description).toBe("");
   });
 
+  test("empty-description task before a divider is not given the divider as its body", () => {
+    const src = `## 1. No body task
+| id | due | status | tags | created | updated |
+|---|---|---|---|---|---|
+| #WRK-1 | - | todo | - | - | - |
+
+---
+
+## 2. Has body
+| id | due | status | tags | created | updated |
+|---|---|---|---|---|---|
+| #WRK-2 | - | todo | - | - | - |
+
+Real body here.
+`;
+    const [a, b] = parseTodoFile(src, "Work", "/v/Work/TODO.md");
+    expect(a!.description).toBe("");
+    expect(b!.description).toBe("Real body here.");
+  });
+
   test("serializes to horizontal table format with dividers and counters", () => {
     const tasks = parseTodoFile(SAMPLE, "Work", "/v/Work/TODO.md");
     const text = serializeTasks(tasks);

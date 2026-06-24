@@ -90,12 +90,8 @@ export function DateInput({
     } else {
       setD(clampDay(y, m, Math.max(1, n)));
     }
-    if (next.length >= max) {
-      setBuf("");
-      setSeg((s) => (Math.min(2, s + 1) as Seg));
-    } else {
-      setBuf(next);
-    }
+    // Stay on the current segment; user moves with ←/→ explicitly.
+    setBuf(next.length >= max ? "" : next);
   }
 
   useKeyboard((key) => {

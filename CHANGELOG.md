@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.6](https://github.com/zeetec20/obsidian-todo/compare/v0.4.5...v0.4.6) (2026-06-24)
+
+
+### Bug Fixes
+
+* change os runner for intel macos ([c3dcd0e](https://github.com/zeetec20/obsidian-todo/commit/c3dcd0ecdd78237a98092feff19e8847bf2d53ff))
+
 ## [0.4.5](https://github.com/zeetec20/obsidian-todo/compare/v0.4.4...v0.4.5) (2026-06-24)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/zeetec20/obsidian-todo/compare/v0.3.0...v0.4.0) (2026-06-24)
+
+
+### Features
+
+* add support install using curl and flake ([e3df55a](https://github.com/zeetec20/obsidian-todo/commit/e3df55a4eecdd1dc00125e79bd7130dd451c5edc))
+
 ## [0.3.0](https://github.com/zeetec20/obsidian-todo/compare/v0.2.2...v0.3.0) (2026-06-23)
 
 

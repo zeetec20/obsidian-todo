@@ -1,6 +1,6 @@
 {
   "name": "obsidian-todo",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Scan an Obsidian vault for TODO.md files and browse tasks in a TUI",
   "type": "module",
   "bin": {

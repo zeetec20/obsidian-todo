@@ -5,9 +5,9 @@
 # arch fails (the foreign @opentui/core-<platform> package won't unpack). Each arch
 # must be built on its own native machine — see .github/workflows/release.yml.
 #
-# macOS Intel: GitHub retired Intel macOS runners. Build on macos-14 (arm64) with x64
-# Bun installed via Rosetta, then call: arch -x86_64 ./scripts/build-release.sh
-# so uname -m returns x86_64 inside this script.
+# macOS Intel: build on the native x86_64 runner `macos-15-intel` (GitHub retired the
+# old `macos-13` label; Rosetta cross-compile from arm64 does not work — bun's installer
+# is Rosetta-aware and refuses to ship an x64 bun).
 #
 # Usage:  ./scripts/build-release.sh [version]
 # Output: dist/otodo-<os>-<arch>.tar.gz  +  dist/otodo-<os>-<arch>.sha256

@@ -35,7 +35,7 @@ jobs:
           - os: macos-14         # Apple Silicon
             platform: darwin
             arch: arm64
-          - os: macos-13         # Intel — native x86_64 runner
+          - os: macos-15-intel   # Intel — native x86_64 runner (macos-13 retired)
             platform: darwin
             arch: x64
           - os: ubuntu-latest    # Linux x64

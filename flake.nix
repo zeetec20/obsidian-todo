@@ -7,8 +7,8 @@
 
   outputs = { self, nixpkgs }:
   let
-    version  = "__VERSION__";
-    gh_owner = "__GH_OWNER__";
+    version  = "0.4.6";
+    gh_owner = "zeetec20";
     base     = "https://github.com/${gh_owner}/obsidian-todo/releases/download/v${version}";
 
     mkPkg = system: tarball: hash: binName: let
@@ -27,13 +27,13 @@
       '';
     };
   in {
-    packages."aarch64-darwin".otodo   = mkPkg "aarch64-darwin" "${base}/otodo-darwin-arm64.tar.gz" "__SHA256_DARWIN_ARM64__" "otodo-darwin-arm64";
+    packages."aarch64-darwin".otodo   = mkPkg "aarch64-darwin" "${base}/otodo-darwin-arm64.tar.gz" "sha256-Hjy6Vd8KLQlFjx9mhPiPdrGWyVezQ1cpj2cSuk+Yk34=" "otodo-darwin-arm64";
     packages."aarch64-darwin".default = self.packages."aarch64-darwin".otodo;
-    packages."x86_64-darwin".otodo    = mkPkg "x86_64-darwin"  "${base}/otodo-darwin-x64.tar.gz"   "__SHA256_DARWIN_X64__"   "otodo-darwin-x64";
+    packages."x86_64-darwin".otodo    = mkPkg "x86_64-darwin"  "${base}/otodo-darwin-x64.tar.gz"   "sha256-4cvoqsnxFJmvQMwVtIK4ejUaPflrYOeyOoyXWIMaswA="   "otodo-darwin-x64";
     packages."x86_64-darwin".default  = self.packages."x86_64-darwin".otodo;
-    packages."aarch64-linux".otodo    = mkPkg "aarch64-linux"  "${base}/otodo-linux-arm64.tar.gz"  "__SHA256_LINUX_ARM64__"  "otodo-linux-arm64";
+    packages."aarch64-linux".otodo    = mkPkg "aarch64-linux"  "${base}/otodo-linux-arm64.tar.gz"  "sha256-KKiU0TfwK2dlFCpObS97aUe4DjMIKIK3Um5meD8z/tQ="  "otodo-linux-arm64";
     packages."aarch64-linux".default  = self.packages."aarch64-linux".otodo;
-    packages."x86_64-linux".otodo     = mkPkg "x86_64-linux"   "${base}/otodo-linux-x64.tar.gz"    "__SHA256_LINUX_X64__"    "otodo-linux-x64";
+    packages."x86_64-linux".otodo     = mkPkg "x86_64-linux"   "${base}/otodo-linux-x64.tar.gz"    "sha256-DR9PHIMb3bhWGXwMqZlDFseXRN53Dam+xyWRtGEmn0Y="    "otodo-linux-x64";
     packages."x86_64-linux".default   = self.packages."x86_64-linux".otodo;
   };
 }

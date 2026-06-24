@@ -29,6 +29,7 @@ jobs:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created == 'true' }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: macos-14         # Apple Silicon
@@ -57,7 +58,7 @@ jobs:
         if: ${{ matrix.cross == true }}
         run: |
           curl -fsSL https://bun.sh/install | BUN_INSTALL="$HOME/.bun-x64" arch -x86_64 bash
-          "$HOME/.bun-x64/bin/bun" install --frozen-lockfile
+          "$HOME/.bun-x64/bin/bun" install
           echo "$HOME/.bun-x64/bin" >> $GITHUB_PATH
       - name: Build binary
         run: |

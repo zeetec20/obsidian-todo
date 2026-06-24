@@ -50,21 +50,41 @@ cd /path/to/homebrew-otodo && git commit -am "otodo X.Y.Z" && git push
 ```bash
 ./scripts/build-release.sh                 # -> dist/otodo-darwin-arm64.tar.gz + .sha256
 ./scripts/gen-formula.sh 0.1.0 zeetec20 "$(cat dist/otodo-darwin-arm64.sha256)"   # -> dist/otodo.rb
+./scripts/gen-flake.sh   0.1.0 zeetec20 "$(cat dist/otodo-darwin-arm64.sha256)"   # -> dist/flake.nix
 ```
 
 Local builds cover one arch — use the workflow for a real multi-arch release.
 
 ## Install (end users)
 
+**Homebrew** (macOS arm64):
 ```bash
 brew install zeetec20/otodo/otodo
 # or:  brew tap zeetec20/otodo && brew install otodo
 ```
 
+**curl** (macOS arm64, installs to `~/.local/bin`):
+```bash
+curl -fsSL https://raw.githubusercontent.com/zeetec20/obsidian-todo/main/scripts/install.sh | sh
+# Override install dir:
+INSTALL_DIR=/usr/local/bin sh <(curl -fsSL https://raw.githubusercontent.com/zeetec20/obsidian-todo/main/scripts/install.sh)
+```
+
+**Nix** (macOS arm64, requires flakes enabled):
+```bash
+nix profile install github:zeetec20/obsidian-todo
+# or run without installing:
+nix run github:zeetec20/obsidian-todo
+```
+The `flake.nix` in the repo root is updated automatically on each release. To enable
+flakes: add `experimental-features = nix-command flakes` to `~/.config/nix/nix.conf`.
+
 ## Notes
 
 - Add Linux/Intel: add a matching native runner to the matrix and the corresponding
   `on_linux`/`on_intel` block to `Formula/otodo.rb` (drop the `depends_on arch: :arm64`).
+  Also add matching outputs to `flake.nix` and an arch branch in `scripts/install.sh`.
 - The binary is ~62 MB compressed runtime; `--minify` is applied.
-- `Formula/otodo.rb` is a **template** (`__PLACEHOLDER__` tokens). The runnable
-  formula is generated to `dist/otodo.rb`.
+- `Formula/otodo.rb` and `flake.nix` are **templates** (`__PLACEHOLDER__` tokens). The
+  runnable versions are generated to `dist/` and — for the flake — committed back to
+  `main` by the release workflow so `github:zeetec20/obsidian-todo` always resolves.

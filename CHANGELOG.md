@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.7](https://github.com/zeetec20/obsidian-todo/compare/v0.4.6...v0.4.7) (2026-06-24)
+
+
+### Bug Fixes
+
+* input text and date for focus cursor issue when value change ([d2d1b5b](https://github.com/zeetec20/obsidian-todo/commit/d2d1b5b6e804ae9f62f50f4d1a10b32c6f26ba8e))
+
 ## [0.4.6](https://github.com/zeetec20/obsidian-todo/compare/v0.4.5...v0.4.6) (2026-06-24)
 
 

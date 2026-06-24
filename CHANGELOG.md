@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3](https://github.com/zeetec20/obsidian-todo/compare/v0.4.2...v0.4.3) (2026-06-24)
+
+
+### Bug Fixes
+
+* build failed for x64 darwin ([d345084](https://github.com/zeetec20/obsidian-todo/commit/d3450841a52188194984ed328b642d549cfbe6ab))
+
 ## [0.4.2](https://github.com/zeetec20/obsidian-todo/compare/v0.4.1...v0.4.2) (2026-06-24)
 
 
